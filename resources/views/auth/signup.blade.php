@@ -1,35 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<title>User Login</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="{SERVER_BASE_URL}/static/img/icons/favicon.ico"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/staticvendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/vendor/animate/animate.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/vendor/animsition/css/animsition.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/vendor/select2/select2.min.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/vendor/daterangepicker/daterangepicker.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/css/util.css">
-	<link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/css/main.css">
-  <link rel="stylesheet" type="text/css" href="{SERVER_BASE_URL}/static/css/style.css">
-<!--===============================================================================================-->
+    <title>User Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Add Vite CSS -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body>
-	
     <form action="{{ route('signup') }}" method="POST">
         @csrf
         <div>
@@ -60,24 +40,9 @@
         <button type="submit">Signup</button>
     </form>
 
-	<div id="dropDownSelect1"></div>
-	
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/bootstrap/js/popper.js"></script>
-	<script src="{SERVER_BASE_URL}/static/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/daterangepicker/moment.min.js"></script>
-	<script src="{SERVER_BASE_URL}/staticvendor/daterangepicker/daterangepicker.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/vendor/countdowntime/countdowntime.js"></script>
-<!--===============================================================================================-->
-	<script src="{SERVER_BASE_URL}/static/js/main.js"></script>
+    <div id="dropDownSelect1"></div>
 
+    <!-- Remove inline JS files, now using Vite -->
 </body>
+
 </html>
