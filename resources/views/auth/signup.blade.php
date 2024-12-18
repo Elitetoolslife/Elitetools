@@ -30,59 +30,35 @@
 </head>
 <body>
 	
-	<div class="limiter">
-		<div class="container-login100" style="background-image: url('{SERVER_BASE_URL}/static/img/bg-01.jpg');">
-			<div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-33">
-				<form class="login100-form validate-form flex-sb flex-w" method="post">
-					<div class="p-t-31 p-b-9">
-						<span class="txt1">
-							Username
-						</span>
-					</div>
-					<div class="wrap-input100 validate-input" data-validate = "Username is required">
-						<input class="input100" type="text" name="login" >
-						<span class="focus-input100"></span>
-					</div>
-					
-					<div class="p-t-13 p-b-9">
-						<span class="txt1">
-							Password
-						</span>
-
-						<a href="#" class="txt2 bo1 m-l-5">
-							Forgot?
-						</a>
-					</div>
-					<div class="wrap-input100 validate-input" data-validate = "Password is required">
-						<input class="input100" type="password" name="password" >
-						<span class="focus-input100"></span>
-					</div>
-
-					<div class="container-login100-form-btn m-t-17">
-						<button class="login100-form-btn">
-							Sign In
-						</button>
-					</div>
-          <div class="w-full text-center p-t-55">
-            <span class="error-message">
-							{error}
-						</span>
-          </div>
-          
-					<div class="w-full text-center p-t-55">
-						<span class="txt2">
-							Not a member?
-						</span>
-
-						<a href="#" class="txt2 bo1">
-							Sign up now
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	
+    <form action="{{ route('signup') }}" method="POST">
+        @csrf
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ old('username') }}">
+            @error('username')
+                <div>{{ $message }}</div>
+            @enderror
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ old('email') }}">
+            @error('email')
+                <div>{{ $message }}</div>
+            @enderror
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+            @error('password')
+                <div>{{ $message }}</div>
+            @enderror
+        </div>
+        <div>
+            <label for="password_confirmation">Confirm Password:</label>
+            <input type="password" id="password_confirmation" name="password_confirmation">
+        </div>
+        <button type="submit">Signup</button>
+    </form>
 
 	<div id="dropDownSelect1"></div>
 	
