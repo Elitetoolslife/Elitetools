@@ -36,15 +36,19 @@ Route::view('index', 'index');              // Index/Overview page for public us
 */
 
 // User Authentication
-Route::get('signup', [SignupController::class, 'showSignupPage'])->name('signup');
-Route::post('signup', [SignupController::class, 'signup'])->name('signup.submit');
-Route::get('login', [LoginController::class, 'showLoginPage'])->name('login');
-Route::post('login', [LoginController::class, 'login'])->name('login.submit');
-Route::match(['get', 'post'], '/logout', [LoginController::class, 'logout'])->name('logout');
+Route::prefix('auth')->group(function () {
+    Route::get('signup', [SignupController::class, 'showSignupPage'])->name('auth.signup');
+    Route::post('signup', [SignupController::class, 'signup'])->name('auth.signup.submit');
+    Route::get('login', [LoginController::class, 'showLoginPage'])->name('auth.login');
+    Route::post('login', [LoginController::class, 'login'])->name('auth.login.submit');
+    Route::match(['get', 'post'], 'logout', [LoginController::class, 'logout'])->name('auth.logout');
+});
 
 // Admin Authentication
-Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [AdminAuthController::class, 'login'])->name('login.submit');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -53,8 +57,8 @@ Route::post('admin/login', [AdminAuthController::class, 'login'])->name('admin.l
 | Routes for logged-in users with 'auth' middleware.
 */
 
-Route::middleware(['auth', 'auth-session:user'])->group(function () {
-    Route::get('/home', [UserHomeController::class, 'index'])->name('home');
+Route::middleware(['auth', 'auth-session:user'])->prefix('user')->name('user.')->group(function () {
+    Route::get('home', [UserHomeController::class, 'index'])->name('home');
 
     // Settings Routes
     Route::prefix('settings')->name('settings.')->group(function () {
@@ -65,7 +69,7 @@ Route::middleware(['auth', 'auth-session:user'])->group(function () {
     });
 
     // Profile Routes
-    Route::get('/user/profile-settings', [ProfileController::class, 'index'])->name('user.profile-settings.index');
+    Route::get('profile-settings', [ProfileController::class, 'index'])->name('profile-settings.index');
 
     // Orders Routes
     Route::prefix('orders')->name('orders.')->group(function () {
@@ -76,7 +80,7 @@ Route::middleware(['auth', 'auth-session:user'])->group(function () {
     });
 
     // Balance Management
-    Route::post('/balance/add', [BalanceController::class, 'add'])->name('balance.add');
+    Route::post('balance/add', [BalanceController::class, 'add'])->name('balance.add');
 
     // Reports Routes
     Route::prefix('reports')->name('reports.')->group(function () {
@@ -95,7 +99,9 @@ Route::middleware(['auth', 'auth-session:user'])->group(function () {
     });
 
     // Buyer Bank Route
-    Route::resource('buyer/bank', BankController::class)->only(['index'])->names(['index' => 'buyers.bank']);
+    Route::prefix('buyer')->name('buyer.')->group(function () {
+        Route::get('bank', [BankController::class, 'index'])->name('bank');
+    });
 
     // SSH Purchase
     Route::post('buy-ssh/{id}', [SSHController::class, 'buySsh'])->name('buySsh');
@@ -108,18 +114,20 @@ Route::middleware(['auth', 'auth-session:user'])->group(function () {
 | Routes for admin panel functionality.
 */
 
-Route::prefix('admin')->name('admin.')->middleware('auth-session:admin')->group(function () {
+Route::prefix('admin')->middleware(['auth-session:admin'])->name('admin.')->group(function () {
     // Admin Dashboard
     Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 
     // User Management
-    Route::get('users', [UserController::class, 'index'])->name('users.index');                // List users
-    Route::match(['get', 'post'], 'users/search', [UserController::class, 'search'])->name('users.search');  // Search users
-    Route::get('users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');        // Edit user
-    Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');         // Update user
-    Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');    // Delete user
-    Route::get('users/{id}', [UserController::class, 'show'])->name('users.show');             // Show user details
-    Route::get('users/{id}/make-reseller', [UserController::class, 'make'])->name('users.makeReseller'); // Make user a reseller
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::match(['get', 'post'], 'search', [UserController::class, 'search'])->name('search');
+        Route::get('{id}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('{id}', [UserController::class, 'update'])->name('update');
+        Route::delete('{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::get('{id}', [UserController::class, 'show'])->name('show');
+        Route::get('{id}/make-reseller', [UserController::class, 'make'])->name('makeReseller');
+    });
 });
 
 /*
@@ -129,8 +137,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth-session:admin')->group(
 | Routes for seller panel functionality.
 */
 
-Route::middleware(['auth', 'auth-session:seller'])->group(function () {
-    Route::get('/seller/home', [SellerController::class, 'index'])->name('seller.home');
+Route::middleware(['auth', 'auth-session:seller'])->prefix('seller')->name('seller.')->group(function () {
+    Route::get('home', [SellerController::class, 'index'])->name('home');
 });
 
 /*
@@ -140,8 +148,10 @@ Route::middleware(['auth', 'auth-session:seller'])->group(function () {
 | General navigation route for fetching navigation elements dynamically.
 */
 
-Route::get('/navbar', [NavigationController::class, 'index'])->name('navbar');
-Route::get('/', [NavigationController::class, 'showNavbar'])->name('home');
+Route::prefix('navigation')->name('navigation.')->group(function () {
+    Route::get('navbar', [NavigationController::class, 'index'])->name('navbar');
+    Route::get('/', [NavigationController::class, 'showNavbar'])->name('home');
+});
 
 /*
 |--------------------------------------------------------------------------
