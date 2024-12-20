@@ -494,6 +494,30 @@ php artisan make:seeder SmtpsTableSeeder
 php artisan make:seeder StufsTableSeeder
 php artisan make:seeder TicketsTableSeeder
 php artisan make:seeder TutorialsTableSeeder
+```
+
+Run the following commands to create model files:
+```sh
+php artisan make:model Account
+php artisan make:model Bank
+php artisan make:model Cpanel
+php artisan make:model Image
+php artisan make:model Lead
+php artisan make:model Mailer
+php artisan make:model Manager
+php artisan make:model News
+php artisan make:model Newseller
+php artisan make:model Payment
+php artisan make:model Purchase
+php artisan make:model Rdp
+php artisan make:model Report
+php artisan make:model Resseller
+php artisan make:model Scampage
+php artisan make:model Smtp
+php artisan make:model Stuf
+php artisan make:model Ticket
+php artisan make:model Tutorial
+php artisan make:model User
 php artisan make:seeder UsersTableSeeder
 ```
 
