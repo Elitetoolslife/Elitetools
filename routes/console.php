@@ -6,6 +6,187 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
+Below is a complete structure for Laravel routes (API and Web), controllers, and resources (views) based on your requirements.
+
+Step 1: Directory Structure
+
+Ensure your project directory is organized as follows:
+
+app/
+    Http/
+        Controllers/
+            BuyerController.php
+            AdminController.php
+            SellerController.php
+            SupportController.php
+            GeneralController.php
+resources/
+    views/
+        buyer/
+            index.blade.php
+            ajaxinfo.blade.php
+            mailer.blade.php
+            leads.blade.php
+            addBalance.blade.php
+            divPage.blade.php
+            tutorial.blade.php
+            pay.blade.php
+            logout.blade.php
+            profile.blade.php
+        admin/
+            index.blade.php
+            dollar.blade.php
+            toolsvis.blade.php
+            ticket.blade.php
+            users.blade.php
+            reports.blade.php
+            resseller.blade.php
+            login.blade.php
+            sales.blade.php
+        seller/
+            index.blade.php
+            ajax.blade.php
+            shells.blade.php
+            rdps.blade.php
+            tutorials.blade.php
+            leads.blade.php
+            scams.blade.php
+            logout.blade.php
+            vt.blade.php
+            refund.blade.php
+        support/
+            index.blade.php
+            ticket.blade.php
+            users.blade.php
+            reports.blade.php
+            logout.blade.php
+            login.blade.php
+            sales.blade.php
+        general/
+            check2shell.blade.php
+            check2smtp.blade.php
+            check2cp.blade.php
+            addReply.blade.php
+            addReportReply.blade.php
+
+Step 2: Controller and Method Definition
+
+Refer to the previously shared controller structure. Each controller has a group of methods responsible for rendering views or performing logic.
+
+You can use the following command to generate the controllers:
+
+php artisan make:controller [ControllerName]
+
+Example:
+
+php artisan make:controller BuyerController
+php artisan make:controller AdminController
+php artisan make:controller SellerController
+php artisan make:controller SupportController
+php artisan make:controller GeneralController
+
+Step 3: Define Routes
+
+Web Routes (web.php)
+
+Here are the routes for rendering views:
+
+use App\Http\Controllers\BuyerController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SellerController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\GeneralController;
+
+// Buyer Routes
+Route::prefix('buyer')->group(function () {
+    Route::get('index', [BuyerController::class, 'index'])->name('buyer.index');
+    Route::get('ajaxinfo', [BuyerController::class, 'ajaxInfo'])->name('buyer.ajaxinfo');
+    Route::get('mailer', [BuyerController::class, 'mailer'])->name('buyer.mailer');
+    Route::get('leads', [BuyerController::class, 'leads'])->name('buyer.leads');
+    Route::get('addBalance', [BuyerController::class, 'addBalance'])->name('buyer.addBalance');
+    Route::get('divPage{id}', [BuyerController::class, 'divPage'])->name('buyer.divPage');
+    Route::get('tutorial', [BuyerController::class, 'tutorial'])->name('buyer.tutorial');
+    Route::get('makePayment', [BuyerController::class, 'makePayment'])->name('buyer.payment');
+    Route::get('logout', [BuyerController::class, 'logout'])->name('buyer.logout');
+    Route::get('account', [BuyerController::class, 'account'])->name('buyer.account');
+});
+
+// Admin Routes
+Route::prefix('admin')->group(function () {
+    Route::get('index', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('status', [AdminController::class, 'status'])->name('admin.status');
+    Route::get('tools', [AdminController::class, 'tools'])->name('admin.tools');
+    Route::get('tickets', [AdminController::class, 'tickets'])->name('admin.tickets');
+    Route::get('users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('sellers', [AdminController::class, 'sellers'])->name('admin.sellers');
+    Route::get('login', [AdminController::class, 'login'])->name('admin.login');
+    Route::get('sales', [AdminController::class, 'sales'])->name('admin.sales');
+});
+
+// Seller Routes
+Route::prefix('seller')->group(function () {
+    Route::get('index', [SellerController::class, 'index'])->name('seller.index');
+    Route::get('ajaxinfo', [SellerController::class, 'ajaxInfo'])->name('seller.ajaxinfo');
+    Route::get('shell', [SellerController::class, 'shell'])->name('seller.shell');
+    Route::get('rdp', [SellerController::class, 'rdp'])->name('seller.rdp');
+    Route::get('tutorial', [SellerController::class, 'tutorial'])->name('seller.tutorial');
+    Route::get('leads', [SellerController::class, 'leads'])->name('seller.leads');
+    Route::get('scampage', [SellerController::class, 'scamPage'])->name('seller.scampage');
+    Route::get('logout', [SellerController::class, 'logout'])->name('seller.logout');
+    Route::get('viewTicket/{id}', [SellerController::class, 'viewTicket'])->name('seller.viewTicket');
+    Route::get('refund/{id}', [SellerController::class, 'refund'])->name('seller.refund');
+});
+
+// Support Routes
+Route::prefix('support')->group(function () {
+    Route::get('index', [SupportController::class, 'index'])->name('support.index');
+    Route::get('tickets', [SupportController::class, 'tickets'])->name('support.tickets');
+    Route::get('users', [SupportController::class, 'users'])->name('support.users');
+    Route::get('reports', [SupportController::class, 'reports'])->name('support.reports');
+    Route::get('logout', [SupportController::class, 'logout'])->name('support.logout');
+    Route::get('login', [SupportController::class, 'login'])->name('support.login');
+    Route::get('sales', [SupportController::class, 'sales'])->name('support.sales');
+});
+
+// General Routes
+Route::controller(GeneralController::class)->group(function () {
+    Route::get('checkShell/{id}', 'checkShell')->name('check.shell');
+    Route::get('checkSMTP/{id}', 'checkSMTP')->name('check.smtp');
+    Route::get('checkCpanel/{id}', 'checkCpanel')->name('check.cpanel');
+    Route::get('addReply/{id}', 'addReply')->name('add.reply');
+    Route::get('addReportReply/{id}', 'addReportReply')->name('add.reportReply');
+});
+
+API Routes (api.php)
+
+If some routes require API logic (e.g., JSON responses):
+
+use App\Http\Controllers\BuyerController;
+
+Route::prefix('buyer')->group(function () {
+    Route::get('info', [BuyerController::class, 'ajaxInfo'])->name('api.buyer.info');
+    Route::post('add-balance', [BuyerController::class, 'addBalance'])->name('api.buyer.addBalance');
+});
+
+Step 4: Resource Views
+
+Create the .blade.php files inside the respective directories (e.g., resources/views/buyer/index.blade.php).
+
+Example for index.blade.php in buyer:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Buyer Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Buyer Dashboard</h1>
+</body>
+</html>
+
+This structure ensures the project is well-organized, scalable, and follows Laravel’s best practices. Let me know if you’d like additional features or more details!
 
 
 Here are the complete routes defined in `routes/web.php` based on the rewrite rules from `buyer/.htaccess`, `admin/.htaccess`, `seller/.htaccess`, and `support/.htaccess`:
