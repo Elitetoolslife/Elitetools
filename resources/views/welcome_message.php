@@ -1,89 +1,108 @@
-<?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-?><!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<title>Welcome to CodeIgniter</title>
+To refactor and move the `.htaccess` rules into a Laravel 11 project, we'll need to translate these rules into Laravel-compatible configurations. Here's how we can do it:
 
-	<style type="text/css">
+1. **ErrorDocument Directive**:
+   - In Laravel, handle 404 errors by creating a custom error view in `resources/views/errors/404.blade.php`.
 
-	::selection { background-color: #E13300; color: white; }
-	::-moz-selection { background-color: #E13300; color: white; }
+2. **RewriteEngine and RewriteRules**:
+   - Laravel uses routing defined in `routes/web.php`. We’ll convert each `RewriteRule` into a corresponding route.
 
-	body {
-		background-color: #fff;
-		margin: 40px;
-		font: 13px/20px normal Helvetica, Arial, sans-serif;
-		color: #4F5155;
-	}
+3. **Access Restrictions**:
+   - Implement access restrictions using middleware.
 
-	a {
-		color: #003399;
-		background-color: transparent;
-		font-weight: normal;
-	}
+4. **Rewrite Conditions**:
+   - Use middleware to handle conditions for specific user agents or request methods.
 
-	h1 {
-		color: #444;
-		background-color: transparent;
-		border-bottom: 1px solid #D0D0D0;
-		font-size: 19px;
-		font-weight: normal;
-		margin: 0 0 14px 0;
-		padding: 14px 15px 10px 15px;
-	}
+### Steps to Implement:
 
-	code {
-		font-family: Consolas, Monaco, Courier New, Courier, monospace;
-		font-size: 12px;
-		background-color: #f9f9f9;
-		border: 1px solid #D0D0D0;
-		color: #002166;
-		display: block;
-		margin: 14px 0 14px 0;
-		padding: 12px 10px 12px 10px;
-	}
+1. **Create Custom Error View**:
+   ```bash
+   mkdir -p resources/views/errors
+   echo "<h1>Page not found</h1>" > resources/views/errors/404.blade.php
+   ```
 
-	#body {
-		margin: 0 15px 0 15px;
-	}
+2. **Define Routes in `routes/web.php`**:
+   ```php
+   use Illuminate\Support\Facades\Route;
 
-	p.footer {
-		text-align: right;
-		font-size: 11px;
-		border-top: 1px solid #D0D0D0;
-		line-height: 32px;
-		padding: 0 10px 0 10px;
-		margin: 20px 0 0 0;
-	}
+   Route::get('index', function () {
+       return view('index');
+   });
 
-	#container {
-		margin: 10px;
-		border: 1px solid #D0D0D0;
-		box-shadow: 0 0 8px #D0D0D0;
-	}
-	</style>
-</head>
-<body>
+   Route::get('ajaxinfo', function () {
+       return view('ajax');
+   });
 
-<div id="container">
-	<h1>Welcome to CodeIgniter!</h1>
+   // Add routes for all other rewrite rules similarly
+   ```
 
-	<div id="body">
-		<p>The page you are looking at is being generated dynamically by CodeIgniter.</p>
+3. **Implement Middleware for Access Restrictions**:
+   ```php
+   // Create a middleware to block specific IP ranges
+   php artisan make:middleware BlockIP
 
-		<p>If you would like to edit this page you'll find it located at:</p>
-		<code>application/views/welcome_message.php</code>
+   // In BlockIP middleware (app/Http/Middleware/BlockIP.php):
+   public function handle($request, Closure $next)
+   {
+       $denyIps = [
+           '41.87.128.0-41.87.159.255',
+           // Add other IP ranges
+       ];
 
-		<p>The corresponding controller for this page is found at:</p>
-		<code>application/controllers/Welcome.php</code>
+       $clientIp = $request->ip();
 
-		<p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="user_guide/">User Guide</a>.</p>
-	</div>
+       foreach ($denyIps as $range) {
+           // Logic to check if $clientIp falls within $range
+       }
 
-	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-</div>
+       return $next($request);
+   }
 
-</body>
-</html>
+   // Register the middleware in app/Http/Kernel.php
+   protected $routeMiddleware = [
+       'block.ip' => \App\Http\Middleware\BlockIP::class,
+   ];
+   ```
+
+4. **Handle Rewrite Conditions**:
+   - Use middleware to check for user agents or request methods.
+
+### Example Middleware for User Agent Checks:
+```php
+php artisan make:middleware CheckUserAgent
+
+// In CheckUserAgent middleware (app/Http/Middleware/CheckUserAgent.php):
+public function handle($request, Closure $next)
+{
+    $blockedAgents = [
+        'libwww-perl', 'wget', 'python', 'nikto', 'curl', 'scan', 'java', 'winhttp', 'clshttp', 'loader'
+    ];
+
+    $userAgent = $request->header('User-Agent');
+
+    foreach ($blockedAgents as $agent) {
+        if (stripos($userAgent, $agent) !== false) {
+            return response('Forbidden', 403);
+        }
+    }
+
+    return $next($request);
+}
+
+// Register the middleware in app/Http/Kernel.php
+protected $routeMiddleware = [
+    'check.user.agent' => \App\Http\Middleware\CheckUserAgent::class,
+];
+```
+
+5. **Apply Middleware to Routes**:
+```php
+Route::middleware(['block.ip', 'check.user.agent'])->group(function () {
+    Route::get('index', function () {
+        return view('index');
+    });
+
+    // Add other routes similarly
+});
+```
+
+This converts the `.htaccess` rules into Laravel-compatible configurations. Ensure to test the Laravel application to verify that all configurations work as expected.
