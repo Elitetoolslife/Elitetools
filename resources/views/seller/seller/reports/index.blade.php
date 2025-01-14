@@ -1,0 +1,1 @@
+Create Laravel  full structure and all necessary components partials alert views laravel full stack complete templates seller/reports/index static tab , reporttab1 reportsTab2 view-reports models on table center row orderid view view report information by reportid model refund button neat reply form
