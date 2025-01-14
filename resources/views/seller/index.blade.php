@@ -172,158 +172,9 @@ $(document).ready(function() {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h3>Report #{{ $report->id }}</h3>
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="ticket">
-                    {!! nl2br(e($report->memo)) !!}
-                </div>
-            </div>
-        </div>
-        <br>
-        @if($report->status == 0)
-            <div class="alert alert-info">This report is closed and you can't reply to it</div>
-        @else
-            <form method="POST" action="{{ route('reports.update', $report->id) }}">
-                @csrf
-                <div class="input-group">
-                    <textarea class="form-control custom-control" rows="3" name="rep" style="resize:none" required></textarea>
-                    <span class="input-group-addon btn btn-primary" onclick="$(this).closest('form').submit();">Reply</span>
-                </div>
-                <input type="hidden" name="add" value="rep" />
-            </form>
-            <br>
-            @if(preg_match("/Not Yet !/i", $report->refunded))
-                <center>
-                    <a data-toggle="modal" data-target="#RefundModal" class="btn label-primary"><font color="white">Refund</font></a>
-                    <!-- Modal -->
-                    <div class="modal fade" id="RefundModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <button type="button" class="modal-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">×</button>
-                                    <div class="bootbox-body" align="left">Are you sure you want to refund this order?</div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                    <a href="{{ url('refund-'.$report->id) }}"><button type="button" class="btn btn-primary">OK</button></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </center>
-            @elseif(preg_match("/Refunded/i", $report->refunded))
-                <div class="well well">This order has been refunded.<br>{{ $report->price }}$ taken from your sales.</div>
-            @endif
-        @endif
 
-        <div class="col-lg-7">
-            <div class="bs-component">
-                <div class="well well">
-                    <h5><b>Item Information</b></h5>
-                    @if($report->acctype == 'cpanel')
-                        @php
-                            $item = \App\Models\Cpanel::find($report->s_id);
-                            $countrycode = strtolower(array_search($item->country, $countrycodes));
-                        @endphp
-                        <table class="table">
-                            <tr>
-                                <td>Country</td>
-                                <td><b><span class="flag-icon flag-icon-{{ $countrycode }}"></span> {{ $item->country }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Detect Hosting</td>
-                                <td><b>{{ $item->infos }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Domain</td>
-                                <td><b>{{ $item->domain }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Url</td>
-                                <td><b><a href='http://{{ parse_url($item->url, PHP_URL_HOST) }}:2083' onclick='window.open(this.href);return false;'>https://{{ parse_url($item->url, PHP_URL_HOST) }}:2083</a></b></td>
-                            </tr>
-                            <tr>
-                                <td>Non-https Url</td>
-                                <td><b><a href='http://{{ parse_url($item->url, PHP_URL_HOST) }}:2082' onclick='window.open(this.href);return false;'>http://{{ parse_url($item->url, PHP_URL_HOST) }}:2082</a></b></td>
-                            </tr>
-                            <tr>
-                                <td>Username</td>
-                                <td><b><input id='username' onClick='this.setSelectionRange(0, this.value.length)' value='{{ $item->login }}' /></b></td>
-                            </tr>
-                            <tr>
-                                <td>Password</td>
-                                <td><b><input id='password' onClick='this.setSelectionRange(0, this.value.length)' value='{{ $item->pass }}' /></b></td>
-                            </tr>
-                            <tr>
-                                <td>Price</td>
-                                <td><b>{{ $item->price }}$</b></td>
-                            </tr>
-                        </table>
-                    @endif
+        
 
-
-                    @if($report->acctype == 'banks')
-                        @php
-                            $item = \App\Models\Banks::find($report->s_id);
-                            $countrycode = strtolower(array_search($item->country, $countrycodes));
-                        @endphp
-                        <table class="table">
-                            <tr>
-                                <td>Country</td>
-                                <td><b><span class="flag-icon flag-icon-{{ $countrycode }}"></span> {{ $item->country }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Bank Name</td>
-                                <td><b>{{ $item->bankname }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Available Information</td>
-                                <td><b>{{ $item->infos }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Balance</td>
-                                <td><b>{{ $item->balance }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Account Info</td>
-                                <td><b><textarea rows='10' cols='30'>{{ $item->url }}</textarea></b></td>
-                            </tr>
-                            <tr>
-                                <td>Price</td>
-                                <td><b>{{ $item->price }}$</b></td>
-                            </tr>
-                        </table>
-                    @endif
-
-                    @if($report->acctype == 'tutorial')
-                        @php
-                            $item = \App\Models\Tutorial::find($report->s_id);
-                        @endphp
-                        <table class="table">
-                            <tr>
-                                <td>Name</td>
-                                <td><b>{{ $item->tutoname }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Information</td>
-                                <td><b>{{ $item->infos }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Download</td>
-                                <td><b><a href='{{ $item->url }}' onclick='window.open(this.href);return false;'>{{ $item->url }}</a></b></td>
-                            </tr>
-                            <tr>
-                                <td>Price</td>
-                                <td><b>{{ $item->price }}$</b></td>
-                            </tr>
-                        </table>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
 
@@ -387,20 +238,202 @@ use Illuminate\Support\Facades\DB;
         }
     }
 
-    private function getItemInformation($report)
-    {
-        $itemInfo = [];
-        switch ($report->acctype) {
-            case 'cpanel':
-                 break;
-            case 'banks':
-                $itemInfo = Bank::where('id', $report->s_id)->first();
-                break;
-              case 'tutorial':
-                $itemInfo = Tutorial::where('id', $report->s_id)->first();
-                break;
-        }
-        return $itemInfo;
+private function getItemInformation($report)
+{
+    switch ($report->acctype) {
+        case 'cpanel':
+            $item = Cpanel::find($report->s_id);
+            return $item ? [
+                'type' => 'cpanel',
+                'data' => [
+                    'Country' => $item->country,
+                    'Hosting Info' => $item->infos,
+                    'Domain' => $item->domain,
+                    'Url' => $item->url,
+                    'Non-HTTPS Url' => str_replace('https://', 'http://', $item->url),
+                    'Username' => $item->login,
+                    'Password' => $item->pass,
+                    'Price' => $item->price,  
+                <div class="container">
+        <h3>Report #{{ $report->id }}</h3>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="ticket">
+                    {!! nl2br(e($report->memo)) !!}
+                </div>
+            </div>
+        </div>
+        <br>
+        @if($report->status == 0)
+            <div class="alert alert-info">This report is closed and you can't reply to it</div>
+        @else
+            <form method="POST" action="{{ route('reports.update', $report->id) }}">
+                @csrf
+                <div class="input-group">
+                    <textarea class="form-control custom-control" rows="3" name="rep" style="resize:none" required></textarea>
+                    <span class="input-group-addon btn btn-primary" onclick="$(this).closest('form').submit();">Reply</span>
+                </div>
+                <input type="hidden" name="add" value="rep" />
+            </form>
+            <br>
+            @if(preg_match("/Not Yet !/i", $report->refunded))
+                <center>
+                    <a data-toggle="modal" data-target="#RefundModal" class="btn label-primary"><font color="white">Refund</font></a>
+                    <!-- Modal -->
+                    <div class="modal fade" id="RefundModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" class="modal-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">×</button>
+                                    <div class="bootbox-body" align="left">Are you sure you want to refund this order?</div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    <a href="{{ url('refund-'.$report->id) }}"><button type="button" class="btn btn-primary">OK</button></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+            @elseif(preg_match("/Refunded/i", $report->refunded))
+                <div class="well well">This order has been refunded.<br>{{ $report->price }}$ taken from your sales.</div>
+            @endif
+   
+                    <div class="col-lg-7">
+            <div class="bs-component">
+                <div class="well well">
+                    <h5><b>Item Information</b></h5>
+                    @if($report->acctype == 'cpanel')
+                        @php
+                            $item = \App\Models\Cpanel::find($report->s_id);
+                            $countrycode = strtolower(array_search($item->country, $countrycodes));
+                        @endphp
+                        <table class="table">
+                            <tr>
+                                <td>Country</td>
+                                <td><b><span class="flag-icon flag-icon-{{ $countrycode }}"></span> {{ $item->country }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Detect Hosting</td>
+                                <td><b>{{ $item->infos }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Domain</td>
+                                <td><b>{{ $item->domain }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Url</td>
+                                <td><b><a href='http://{{ parse_url($item->url, PHP_URL_HOST) }}:2083' onclick='window.open(this.href);return false;'>https://{{ parse_url($item->url, PHP_URL_HOST) }}:2083</a></b></td>
+                            </tr>
+                            <tr>
+                                <td>Non-https Url</td>
+                                <td><b><a href='http://{{ parse_url($item->url, PHP_URL_HOST) }}:2082' onclick='window.open(this.href);return false;'>http://{{ parse_url($item->url, PHP_URL_HOST) }}:2082</a></b></td>
+                            </tr>
+                            <tr>
+                                <td>Username</td>
+                                <td><b><input id='username' onClick='this.setSelectionRange(0, this.value.length)' value='{{ $item->login }}' /></b></td>
+                            </tr>
+                            <tr>
+                                <td>Password</td>
+                                <td><b><input id='password' onClick='this.setSelectionRange(0, this.value.length)' value='{{ $item->pass }}' /></b></td>
+                            </tr>
+                            <tr>
+                                <td>Price</td>
+                                <td><b>{{ $item->price }}$</b></td>
+                            </tr>
+                        </table>
+            
+                ]
+            ] : null;
+
+        case 'banks':
+            $item = Bank::find($report->s_id);
+            return $item ? [
+                'type' => 'banks',
+                'data' => [
+                    'Country' => $item->country,
+                    'Bank Name' => $item->bankname,
+                    'Available Information' => $item->infos,
+                    'Balance' => $item->balance,
+                    'Account Info' => $item->url,
+                    'Price' => $item->price,
+                @if($report->acctype == 'banks')
+                        @php
+                            $item = \App\Models\Banks::find($report->s_id);
+                            $countrycode = strtolower(array_search($item->country, $countrycodes));
+                        @endphp
+                        <table class="table">
+                            <tr>
+                                <td>Country</td>
+                                <td><b><span class="flag-icon flag-icon-{{ $countrycode }}"></span> {{ $item->country }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Bank Name</td>
+                                <td><b>{{ $item->bankname }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Available Information</td>
+                                <td><b>{{ $item->infos }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Balance</td>
+                                <td><b>{{ $item->balance }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Account Info</td>
+                                <td><b><textarea rows='10' cols='30'>{{ $item->url }}</textarea></b></td>
+                            </tr>
+                            <tr>
+                                <td>Price</td>
+                                <td><b>{{ $item->price }}$</b></td>
+                            </tr>
+                        </table>
+                    
+
+                ]
+            ] : null;
+
+        case 'tutorial':
+            $item = Tutorial::find($report->s_id);
+            return $item ? [
+                'type' => 'tutorial',
+                'data' => [
+                    'Name' => $item->tutoname,
+                    'Information' => $item->infos,
+                    'Download' => $item->url,
+                    'Price' => $item->price,
+                                @if($report->acctype == 'tutorial')
+                        @php
+                            $item = \App\Models\Tutorial::find($report->s_id);
+                        @endphp
+                        <table class="table">
+                            <tr>
+                                <td>Name</td>
+                                <td><b>{{ $item->tutoname }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Information</td>
+                                <td><b>{{ $item->infos }}</b></td>
+                            </tr>
+                            <tr>
+                                <td>Download</td>
+                                <td><b><a href='{{ $item->url }}' onclick='window.open(this.href);return false;'>{{ $item->url }}</a></b></td>
+                            </tr>
+                            <tr>
+                                <td>Price</td>
+                                <td><b>{{ $item->price }}$</b></td>
+                            </tr>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+                ]
+            ] : null;
+
+        default:
+            return null;
     }
 
     public function update(Request $request, $id)
